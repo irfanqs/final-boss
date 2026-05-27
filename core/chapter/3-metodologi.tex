@@ -21,18 +21,37 @@ integrasi penuh.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.3\textwidth]{gambar/flowchart3.png}
+  \includegraphics[width=0.5\textwidth]{gambar/flowchart3.png}
   \caption{Diagram Alir Metode Penelitian}
   \label{fig:flowchart3}
 \end{figure}
 
+Penelitian ini menggunakan metode sebagai berikut untuk mencapai tujuan dari sistem
+yang dirancang, yaitu:
+\begin{itemize}
+    \item \textbf{Perancangan Sistem}: Pada tahap ini ditentukan arsitektur sistem secara menyeluruh, mencakup alur kerja deteksi bunga sawit, mekanisme penyerbukan otomatis, serta skema rangkaian elektronik penghubung antara unit komputasi, sensor, dan aktuator.
+    \item \textbf{Pengumpulan dan Anotasi Dataset}: Pada tahap ini dilakukan pengambilan citra bunga betina kelapa sawit secara langsung di kebun, kemudian dianotasi menggunakan platform Roboflow dengan memberikan \emph{bounding box} pada setiap objek bunga untuk keperluan pelatihan model.
+    \item \textbf{Pelatihan Model YOLO}: Pada tahap ini model YOLO dilatih menggunakan \emph{dataset} yang telah dianotasi dengan memanfaatkan GPU di Google Colab agar proses komputasi berlangsung lebih efisien. Parameter pelatihan seperti \emph{learning rate}, \emph{batch size}, dan jumlah \emph{epoch} disesuaikan untuk mencapai performa terbaik.
+    \item \textbf{Evaluasi Model YOLO}: Pada tahap ini dilakukan perbandingan beberapa varian arsitektur YOLO berdasarkan metrik \emph{precision}, \emph{recall}, mAP@0.5, serta kecepatan inferensi pada Raspberry Pi 5 untuk menentukan model yang paling optimal antara akurasi dan kecepatan.
+    \item \textbf{Perancangan Sistem Penyemprot}: Pada tahap ini dirancang mekanisme buka-tutup katup tabung \emph{pollen} menggunakan \emph{servo motor} yang dikendalikan sinyal PWM dari Raspberry Pi, serta \emph{blower sentrifugal} sebagai media peniup serbuk sari ke bunga betina.
+    \item \textbf{Integrasi Sistem Monitoring Volume Pollen}: Pada tahap ini sensor ToF VL53L0X dipasang pada bagian atas tabung \emph{pollen} untuk mengukur ketinggian permukaan serbuk secara non-kontak, kemudian dikonversi menjadi estimasi volume menggunakan rumus silinder.
+    \item \textbf{Implementasi Sistem pada Raspberry Pi}: Pada tahap ini seluruh komponen perangkat lunak dan perangkat keras diintegrasikan ke dalam Raspberry Pi 5 sebagai sistem terpadu yang kemudian dipasang pada \emph{drone quadcopter} kelas ringan.
+    \item \textbf{Pengujian \& Evaluasi Sistem}: Pada tahap ini dilakukan pengujian fungsional setiap komponen secara terpisah, dilanjutkan dengan pengujian sistem terpadu untuk menilai keberhasilan deteksi bunga dan proses penyerbukan otomatis secara keseluruhan.
+\end{itemize}
+
+Pengujian dan analisis dilakukan setelah alat dan aplikasi selesai dikembangkan. Analisis
+dilakukan menggunakan alat dan bahan yang telah ditentukan, baik yang sudah dirakit menjadi
+prototipe sistem penyerbuk, ataupun perangkat lunak yang dikembangkan khusus guna keperluan
+analisis. Pengujian dan analisis mencakup tahap-tahap sebagai berikut:
+\begin{itemize}
+    \item \textbf{Pengujian Kinerja Model YOLO}: Dilakukan pengujian untuk menentukan performa model dalam mendeteksi bunga betina kelapa sawit pada fase reseptif. Metrik yang diuji mencakup nilai \emph{precision}, \emph{recall}, dan mAP@0.5 pada data uji, serta kecepatan inferensi (\emph{frames per second}) pada Raspberry Pi 5.
+    \item \textbf{Pengujian Sensor Volume Pollen}: Dilakukan pengujian terhadap sensor VL53L0X untuk memverifikasi akurasi pembacaan jarak dan konversi ke estimasi volume \emph{pollen} di dalam tabung. Hasil pengujian dibandingkan dengan pengukuran manual menggunakan penggaris untuk menilai kesesuaian data sensor.
+    \item \textbf{Pengujian Mekanisme Penyemprot}: Dilakukan pengujian terhadap aktuator \emph{servo motor} dan \emph{blower sentrifugal} untuk memastikan buka-tutup katup berjalan sesuai sinyal PWM dan arah semburan \emph{pollen} sesuai sasaran.
+    \item \textbf{Pengujian Sistem Terpadu}: Dilakukan pengujian terhadap keseluruhan sistem terintegrasi pada Raspberry Pi 5, mencakup alur deteksi bunga hingga aktivasi mekanisme penyemprot secara otomatis. Pengujian dilakukan dalam dua tahap, yaitu pengujian statis di laboratorium dan pengujian lapangan di kebun kelapa sawit.
+\end{itemize}
+
+
 \subsection{Perancangan Sistem}
-Tahap awal penelitian adalah perancangan sistem secara keseluruhan, yang bertujuan
-untuk menentukan arsitektur sistem dan hubungan antar komponen. Sistem terdiri dari beberapa
-komponen utama, yaitu kamera sebagai sensor visual, Raspberry Pi sebagai unit komputasi,
-model YOLO sebagai algoritma deteksi objek, blower fan sebagai aktuator penyemprot, sensor
-Time of Flight VL53L0X sebagai sensor level pollen, serta integrasi ke drone sebagai platform
-pembawa.
 Pada tahap ini ditentukan alur kerja sistem, yaitu citra bunga sawit diambil oleh
 kamera, kemudian diproses oleh Raspberry Pi menggunakan model YOLO untuk mendeteksi
 bunga betina yang siap diserbuki. Ketika objek terdeteksi, sistem akan memeriksa kondisi
@@ -41,10 +60,202 @@ penyemprot akan diaktifkan untuk melakukan penyerbukan.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.6\textwidth]{gambar/alurkerja.png}
+  \includegraphics[width=0.8\textwidth]{gambar/alurkerja.png}
   \caption{Alur Kerja Sistem}
   \label{fig:alurkerja}
 \end{figure}
+
+Rancangan sistem juga mencakup komponen-komponen yang diperlukan untuk mendukung berjalannya sistem pelacakan lokasi dan deteksi terjatuh. Sistem dirancang mengikuti
+kebutuhan fungsional sebagai berikut:
+
+\begin{itemize}
+    \item Raspberry Pi 5 sebagai unit komputasi utama untuk menjalankan inferensi model YOLO secara \emph{real-time} dan mengendalikan seluruh aktuator sistem.
+    \item Pi Camera (antarmuka CSI) untuk mengambil citra bunga kelapa sawit yang menjadi masukan bagi model deteksi.
+    \item Sensor \emph{Time of Flight} VL53L0X untuk memonitor volume \emph{pollen} di dalam tabung secara non-kontak melalui antarmuka I2C.
+    \item \emph{Servo Motor} sebagai aktuator pembuka dan penutup katup tabung \emph{pollen} yang dikendalikan melalui sinyal PWM dari pin GPIO Raspberry Pi.
+    \item \emph{Blower Sentrifugal} 5V sebagai mekanisme peniup serbuk sari ke arah bunga betina yang telah terdeteksi oleh model.
+    \item MOSFET IRLZ44N sebagai saklar elektronik untuk mengontrol arus \emph{blower} langsung dari pin GPIO Raspberry Pi dengan tegangan logika 3.3V.
+    \item \emph{Buck Converter} XL4015 untuk menurunkan tegangan baterai 7.4V menjadi 5V stabil bagi seluruh komponen sistem.
+    \item Dua buah baterai 18650 dirangkai seri sebagai sumber daya portabel berkapasitas 7.4V.
+\end{itemize}
+
+\subsubsection*{Rancangan Prototipe}
+
+Rancangan prototipe disesuaikan dengan kebutuhan fungsional sistem penyerbukan kelapa sawit berbasis \emph{drone}. Pemilihan komponen dilakukan melalui pencarian komponen yang tersedia di \emph{e-commerce} (seperti Tokopedia dan Shopee), yang disesuaikan pula dengan kebutuhan fungsionalitas serta keterbatasan berat \emph{payload drone}. Komponen yang dipilih kemudian dievaluasi berdasarkan kompatibilitas antarmuka, ketersediaan \emph{library} pendukung, dan kemudahan pemasangan. Rancangan prototipe mengikuti kebutuhan komponen sebagai berikut:
+
+\begin{itemize}
+    \item \textbf{Unit Komputasi}: Unit komputasi harus mampu menjalankan inferensi model YOLO secara \emph{real-time} dengan laju bingkai yang memadai, mendukung antarmuka kamera CSI, serta memiliki pin GPIO untuk kendali aktuator.
+    \item \textbf{Kamera}: Kamera harus mampu menangkap citra bunga kelapa sawit dengan resolusi yang cukup untuk keperluan deteksi objek, dengan latensi pengambilan gambar yang rendah dan beban CPU yang minimal.
+    \item \textbf{Mekanisme Semprot}: Komponen ini harus mampu mendorong serbuk sari keluar dari tabung secara terarah ke bunga betina, ringan, serta dapat dikendalikan dari pin GPIO Raspberry Pi tanpa memerlukan komponen tambahan yang kompleks.
+    \item \textbf{Saklar Elektronik}: Saklar elektronik harus kompatibel dengan tegangan logika 3.3V dari GPIO Raspberry Pi dan mampu dikendalikan melalui sinyal PWM untuk pengaturan kecepatan \emph{blower}.
+    \item \textbf{Sumber Daya}: Sumber daya harus portabel, memiliki tegangan nominal yang sesuai sebagai masukan \emph{buck converter}, serta mudah diisi ulang tanpa memerlukan peralatan pengisian khusus.
+\end{itemize}
+
+\subsubsection*{Pemilihan Unit Komputasi}
+
+Dua pilihan utama unit komputasi yang dievaluasi adalah Raspberry Pi 4 Model B dan Raspberry Pi 5 Model B. Kedua papan ini dipilih karena mendukung ekosistem yang sama, termasuk \emph{library} picamera2, Ultralytics YOLO, dan kontrol GPIO via Python. Perbedaan utama terletak pada prosesor yang digunakan, di mana Raspberry Pi 5 menggunakan ARM Cortex-A76 berkecepatan 2.4 GHz, sedangkan Raspberry Pi 4 menggunakan ARM Cortex-A72 berkecepatan 1.8 GHz. Perbedaan dari kedua unit komputasi tersebut dapat dilihat pada Tabel~\ref{tab:perbandingan-rpi}.
+
+\begin{table}[H]
+\centering
+\caption{Perbandingan Unit Komputasi Raspberry Pi 4 dengan Raspberry Pi 5}
+\label{tab:perbandingan-rpi}
+\begin{tabular}{|p{3.5cm}|p{5.5cm}|p{5.5cm}|}
+\hline
+\textbf{Fitur} & \textbf{Raspberry Pi 4 Model B} & \textbf{Raspberry Pi 5 Model B} \\
+\hline
+Prosesor & ARM Cortex-A72 @ 1.8 GHz & ARM Cortex-A76 @ 2.4 GHz \\
+\hline
+RAM & 2 / 4 / 8 GB LPDDR4 & 4 / 8 GB LPDDR4X \\
+\hline
+Port Kamera CSI & 1 port & 2 port \\
+\hline
+GPIO & 40 pin & 40 pin \\
+\hline
+Inferensi YOLOv11 & $\pm$10--15 FPS & $\pm$28--31 FPS \\
+\hline
+Harga (Tokopedia) & Rp550.000--700.000 & Rp650.000--850.000 \\
+\hline
+\end{tabular}
+\end{table}
+
+Fitur dan kemampuan prosesor menjadi poin penting dalam pemilihan unit komputasi karena sistem penyerbukan membutuhkan \emph{throughput} inferensi yang cukup tinggi agar deteksi bunga dapat berjalan secara \emph{real-time}. Berdasarkan hasil evaluasi pada tahap perbandingan model, Raspberry Pi 5 mampu menjalankan YOLOv11 pada laju \textbf{30.85 FPS}, jauh melampaui kemampuan Raspberry Pi 4 untuk beban model yang sama. Oleh karena itu, \textbf{Raspberry Pi 5 Model B (4 GB RAM)} dipilih sebagai unit komputasi utama.
+
+\subsubsection*{Pemilihan Kamera}
+
+Dua pilihan kamera yang dievaluasi adalah Pi Camera Module (antarmuka CSI) dan kamera USB (\emph{webcam}). Kedua kamera ini memiliki harga yang relatif terjangkau dan kompatibel dengan Raspberry Pi. Perbedaan antara kedua kamera tersebut dapat dilihat pada Tabel~\ref{tab:perbandingan-kamera}.
+
+\begin{table}[H]
+\centering
+\caption{Perbandingan Pi Camera (CSI) dengan Kamera USB}
+\label{tab:perbandingan-kamera}
+\begin{tabular}{|p{3.5cm}|p{5.5cm}|p{5.5cm}|}
+\hline
+\textbf{Fitur} & \textbf{Pi Camera (CSI)} & \textbf{Kamera USB} \\
+\hline
+Antarmuka & CSI (\emph{ribbon cable}) & USB 2.0/3.0 \\
+\hline
+Latensi pengambilan gambar & Rendah & Lebih tinggi \\
+\hline
+Beban CPU & Rendah & Lebih tinggi \\
+\hline
+\emph{Library} & picamera2 & OpenCV / V4L2 \\
+\hline
+Kompatibilitas RPi 5 & Penuh (CSI CAM0) & Ya \\
+\hline
+Harga (Tokopedia) & Rp150.000--300.000 & Rp80.000--350.000 \\
+\hline
+\end{tabular}
+\end{table}
+
+Pi Camera dipilih karena memiliki latensi lebih rendah dan beban CPU yang lebih ringan dibandingkan kamera USB, sehingga tidak mengurangi kapasitas komputasi Raspberry Pi 5 yang sepenuhnya dibutuhkan untuk inferensi YOLO. Antarmuka CSI juga terhubung langsung ke \emph{ribbon cable} tanpa berbagi \emph{bandwidth} dengan perangkat USB lainnya. Oleh karena itu, \textbf{Pi Camera} dipilih sebagai sensor kamera sistem.
+
+\subsubsection*{Pemilihan Mekanisme Semprot}
+
+Dua alternatif mekanisme semprot yang dievaluasi adalah \emph{blower sentrifugal} 5V tipe 5015 dan motor \emph{brushed} RC tipe 615/716 yang dilengkapi \emph{propeller} 40 mm. Perbandingan kedua komponen tersebut ditunjukkan pada Tabel~\ref{tab:perbandingan-blower}.
+
+\begin{table}[H]
+\centering
+\caption{Perbandingan Blower Sentrifugal 5V dengan Motor RC dan Propeller}
+\label{tab:perbandingan-blower}
+\begin{tabular}{|p{3.5cm}|p{5.5cm}|p{5.5cm}|}
+\hline
+\textbf{Fitur} & \textbf{Blower Sentrifugal 5V} & \textbf{Motor RC + Propeller 40 mm} \\
+\hline
+Jenis aliran udara & Sentrifugal (terarah ke samping) & Aksial (searah sumbu motor) \\
+\hline
+Tegangan operasi & 5V & 3.7--7.4V \\
+\hline
+Berat & 25--40 gram & 15--30 gram (+ \emph{housing}) \\
+\hline
+Instalasi & \emph{Plug and play} & Perlu \emph{housing} tambahan (3D print) \\
+\hline
+Risiko serbuk masuk motor & Rendah & Tinggi (potensi korsleting) \\
+\hline
+Harga (Tokopedia) & Rp15.000--30.000 & Rp20.000--50.000 + \emph{housing} \\
+\hline
+\end{tabular}
+\end{table}
+
+Motor RC dengan \emph{propeller} ditolak karena menghasilkan aliran udara aksial yang tidak terarah ke saluran \emph{pollen}, serta berisiko menyedot serbuk sari ke dalam motor sehingga dapat menyebabkan korsleting. \emph{Blower sentrifugal} mengambil udara dari atas dan membuang udara secara terarah dari samping, sehingga cocok untuk mendorong \emph{pollen} melalui saluran keluaran. Instalasi yang lebih sederhana tanpa memerlukan \emph{housing} tambahan juga menjadi pertimbangan efisiensi waktu pengerjaan. Oleh karena itu, \textbf{Blower Sentrifugal 5V (tipe 5015)} dipilih sebagai mekanisme semprot sistem.
+
+\subsubsection*{Pemilihan Saklar Elektronik}
+
+Tiga alternatif saklar elektronik yang dievaluasi untuk mengendalikan \emph{blower} dari GPIO Raspberry Pi adalah MOSFET IRLZ44N, MOSFET IRFZ44N, dan \emph{relay} elektromekanik. Perbandingan ketiganya ditunjukkan pada Tabel~\ref{tab:perbandingan-mosfet}.
+
+\begin{table}[H]
+\centering
+\caption{Perbandingan IRLZ44N, IRFZ44N, dan Relay sebagai Saklar Elektronik}
+\label{tab:perbandingan-mosfet}
+\begin{tabular}{|p{3cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+\textbf{Fitur} & \textbf{IRLZ44N} & \textbf{IRFZ44N} & \textbf{Relay} \\
+\hline
+Tipe & \emph{Logic-level} MOSFET & MOSFET standar & Elektromekanik \\
+\hline
+Tegangan \emph{gate} & 1--2V (penuh di 3.3V) & 4--6V (butuh 10--12V) & -- \\
+\hline
+Kompatibel GPIO 3.3V & Ya & Tidak & Ya (+ transistor) \\
+\hline
+Kontrol PWM & Ya & Tidak optimal & Tidak \\
+\hline
+Suara mekanik & Tidak ada & Tidak ada & Ada (\emph{klik}) \\
+\hline
+Berat & $<$1 gram & $<$1 gram & 5--15 gram \\
+\hline
+\end{tabular}
+\end{table}
+
+IRFZ44N ditolak karena membutuhkan tegangan \emph{gate} 10--12V untuk terbuka penuh, sementara GPIO Raspberry Pi hanya menghasilkan 3.3V, sehingga MOSFET akan bekerja dalam kondisi setengah terbuka (\emph{linear region}) yang menimbulkan panas berlebih. \emph{Relay} ditolak karena tidak mendukung kontrol kecepatan via PWM, memiliki suara mekanik, dan bobotnya lebih besar. MOSFET IRLZ44N merupakan \emph{logic-level} MOSFET yang dapat diaktifkan penuh oleh tegangan 3.3V GPIO Raspberry Pi tanpa komponen tambahan, dengan resistor 220$\Omega$ pada jalur \emph{gate} sebagai pelindung GPIO. Oleh karena itu, \textbf{MOSFET IRLZ44N} dipilih sebagai saklar elektronik sistem.
+
+\subsubsection*{Pemilihan Sumber Daya}
+
+Dua alternatif sumber daya yang dievaluasi adalah dua buah baterai 18650 dirangkai seri dan baterai Li-Po 2S. Keduanya menghasilkan tegangan nominal 7.4V yang sesuai sebagai masukan \emph{buck converter}. Perbandingan keduanya ditunjukkan pada Tabel~\ref{tab:perbandingan-baterai}.
+
+\begin{table}[H]
+\centering
+\caption{Perbandingan Sumber Daya Baterai 2x 18650 Seri dengan Li-Po 2S}
+\label{tab:perbandingan-baterai}
+\begin{tabular}{|p{3.5cm}|p{5.5cm}|p{5.5cm}|}
+\hline
+\textbf{Fitur} & \textbf{2x 18650 (Seri)} & \textbf{Li-Po 2S} \\
+\hline
+Tegangan nominal & 7.4V & 7.4V \\
+\hline
+Kapasitas & 2000--3500 mAh per sel & 1000--5000 mAh \\
+\hline
+Berat per 2000 mAh & $\pm$90--100 gram & $\pm$100--150 gram \\
+\hline
+Metode pengisian & \emph{Charger} eksternal 18650 biasa & \emph{Balance charger} khusus \\
+\hline
+Kemudahan pengisian & Mudah & Perlu \emph{charger} khusus Li-Po \\
+\hline
+Harga (Tokopedia) & Rp30.000--80.000/sel & Rp80.000--200.000 \\
+\hline
+\end{tabular}
+\end{table}
+
+Baterai 18650 dipilih karena kemudahan pengisian daya menggunakan \emph{charger} eksternal biasa tanpa memerlukan \emph{balance charger} khusus seperti pada baterai Li-Po. Kapasitas per sel yang lebih besar (2000--3500 mAh) juga memberikan durasi operasional yang lebih panjang. Dua buah sel 18650 dirangkai seri menghasilkan tegangan 7.4V yang selanjutnya diturunkan oleh \emph{buck converter} XL4015 menjadi 5.1V stabil untuk seluruh komponen sistem. Oleh karena itu, \textbf{dua buah baterai 18650 dirangkai seri} dipilih sebagai sumber daya sistem.
+
+\subsubsection*{Rangkaian Elektronik}
+Selain alur kerja, dirancang pula skema rangkaian elektronik untuk menghubungkan komponen komputasi, sensor, aktuator, dan suplai daya. Skema ini berpusat pada Raspberry Pi 5 yang dilengkapi dengan sensor \emph{Time of Flight} VL53L0X, motor servo, \emph{blower sentrifugal}, serta sirkuit penurun tegangan \emph{(buck converter)}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{gambar/skema_rpi.png}
+  \caption{Skema Rangkaian Elektronik Raspberry Pi 5 dan Komponen Aktuator}
+  \label{fig:skema-rpi}
+\end{figure}
+
+
+\subsubsection*{Manajemen Jalur Daya}
+Penyaluran daya utama menggunakan dua buah baterai tipe 18650 yang dirangkai secara seri untuk menghasilkan tegangan 7.4V. Arus dari baterai utama dihubungkan melintasi sakelar fisik \emph{(toggle switch)} sebelum diteruskan ke masukan modul \emph{Buck Converter}. Modul ini akan menurunkan tegangan \emph{(step-down)} dengan \emph{output} 5.1V yang didistribusikan ke tiga titik jalur daya utama:
+\begin{itemize}
+    \item \emph{Port} USB Type-C Raspberry Pi 5 sebagai penyuplai komputasi utama.
+    \item Jalur VCC \emph{Servo Motor} penyemprot (kabel merah).
+    \item Kutub catu daya positif (+) pada \emph{Blower Sentrifugal}.
+\end{itemize}
+Untuk menjamin kestabilan sinyal logika dan referensi tegangan antar komponen, seluruh titik kutub negatif (\emph{ground}) seperti OUT$-$ \emph{Buck Converter}, GND Raspberry Pi, \emph{Source} pada MOSFET, GND \emph{Servo}, serta GND VL53L0X dihubungkan bertumpu pada satu rute sirkuit yang sama (\emph{common ground}).
+
 
 \subsection{Pengumpulan dan Anotasi Dataset}
 Tahap ini bertujuan untuk memperoleh \emph{dataset} citra bunga kelapa sawit yang digunakan untuk melatih model deteksi. Pengumpulan data dilakukan di kebun kelapa sawit yang berada di Blitar, dengan mengambil citra bunga betina menggunakan kamera HP dan kamera \emph{drone}. Pengambilan data dilakukan berbagai kondisi, seperti perbedaan sudut pandang dan jarak. Selain itu, pengambilan data akan dilakukan pada siang hari agar model bisa memprediksi gambar di saat pengujian nyata. \emph{Dataset} diklasifikasikan menjadi dua kelas inti, yaitu bunga matang dan tidak matang.
