@@ -5,8 +5,11 @@ Pada bagian ini, dijelaskan metode yang digunakan, alat dan bahan penelitian, se
 rancangan implementasi yang digunakan peneliti sebagai kerangka dalam melaksanakan
 penelitian yang terstruktur.
 
-\section{Deskripsi Sistem}
-\label{sec:deskripsi-sistem}
+\section{Metode yang Digunakan}
+\label{sec:metode-yang-digunakan}
+
+\subsection{Metode Penelitian}
+\label{subsec:metode-penelitian}
 
 Penelitian ini menggunakan metode pengembangan sistem yang mengintegrasikan
 computer vision, embedded system, dan mekanisme penyerbukan dalam satu kesatuan sistem.
@@ -51,7 +54,9 @@ analisis. Pengujian dan analisis mencakup tahap-tahap sebagai berikut:
 \end{itemize}
 
 
-\subsection{Perancangan Sistem}
+\subsection{Rancangan Sistem}
+\label{subsec:rancangan-sistem}
+
 Pada tahap ini ditentukan alur kerja sistem, yaitu citra bunga sawit diambil oleh
 kamera, kemudian diproses oleh Raspberry Pi menggunakan model YOLO untuk mendeteksi
 bunga betina yang siap diserbuki. Ketika objek terdeteksi, sistem akan memeriksa kondisi
@@ -65,8 +70,7 @@ penyemprot akan diaktifkan untuk melakukan penyerbukan.
   \label{fig:alurkerja}
 \end{figure}
 
-Rancangan sistem juga mencakup komponen-komponen yang diperlukan untuk mendukung berjalannya sistem pelacakan lokasi dan deteksi terjatuh. Sistem dirancang mengikuti
-kebutuhan fungsional sebagai berikut:
+Rancangan sistem juga mencakup komponen-komponen yang diperlukan untuk mendukung berjalannya sistem deteksi dan penyerbukan otomatis. Sistem dirancang mengikuti kebutuhan fungsional sebagai berikut:
 
 \begin{itemize}
     \item Raspberry Pi 5 sebagai unit komputasi utama untuk menjalankan inferensi model YOLO secara \emph{real-time} dan mengendalikan seluruh aktuator sistem.
@@ -79,7 +83,9 @@ kebutuhan fungsional sebagai berikut:
     \item Dua buah baterai 18650 dirangkai seri sebagai sumber daya portabel berkapasitas 7.4V.
 \end{itemize}
 
-\subsubsection*{Rancangan Prototipe}
+
+\subsection{Rancangan Prototipe}
+\label{subsec:rancangan-prototipe}
 
 Rancangan prototipe disesuaikan dengan kebutuhan fungsional sistem penyerbukan kelapa sawit berbasis \emph{drone}. Pemilihan komponen dilakukan melalui pencarian komponen yang tersedia di \emph{e-commerce} (seperti Tokopedia dan Shopee), yang disesuaikan pula dengan kebutuhan fungsionalitas serta keterbatasan berat \emph{payload drone}. Komponen yang dipilih kemudian dievaluasi berdasarkan kompatibilitas antarmuka, ketersediaan \emph{library} pendukung, dan kemudahan pemasangan. Rancangan prototipe mengikuti kebutuhan komponen sebagai berikut:
 
@@ -91,7 +97,10 @@ Rancangan prototipe disesuaikan dengan kebutuhan fungsional sistem penyerbukan k
     \item \textbf{Sumber Daya}: Sumber daya harus portabel, memiliki tegangan nominal yang sesuai sebagai masukan \emph{buck converter}, serta mudah diisi ulang tanpa memerlukan peralatan pengisian khusus.
 \end{itemize}
 
-\subsubsection*{Pemilihan Unit Komputasi}
+\subsubsection{Pemilihan Komponen}
+\label{subsubsec:pemilihan-komponen}
+
+\paragraph{Pemilihan Unit Komputasi}
 
 Dua pilihan utama unit komputasi yang dievaluasi adalah Raspberry Pi 4 Model B dan Raspberry Pi 5 Model B. Kedua papan ini dipilih karena mendukung ekosistem yang sama, termasuk \emph{library} picamera2, Ultralytics YOLO, dan kontrol GPIO via Python. Perbedaan utama terletak pada prosesor yang digunakan, di mana Raspberry Pi 5 menggunakan ARM Cortex-A76 berkecepatan 2.4 GHz, sedangkan Raspberry Pi 4 menggunakan ARM Cortex-A72 berkecepatan 1.8 GHz. Perbedaan dari kedua unit komputasi tersebut dapat dilihat pada Tabel~\ref{tab:perbandingan-rpi}.
 
@@ -120,7 +129,7 @@ Harga (Tokopedia) & Rp550.000--700.000 & Rp650.000--850.000 \\
 
 Fitur dan kemampuan prosesor menjadi poin penting dalam pemilihan unit komputasi karena sistem penyerbukan membutuhkan \emph{throughput} inferensi yang cukup tinggi agar deteksi bunga dapat berjalan secara \emph{real-time}. Berdasarkan hasil evaluasi pada tahap perbandingan model, Raspberry Pi 5 mampu menjalankan YOLOv11 pada laju \textbf{30.85 FPS}, jauh melampaui kemampuan Raspberry Pi 4 untuk beban model yang sama. Oleh karena itu, \textbf{Raspberry Pi 5 Model B (4 GB RAM)} dipilih sebagai unit komputasi utama.
 
-\subsubsection*{Pemilihan Kamera}
+\paragraph{Pemilihan Kamera}
 
 Dua pilihan kamera yang dievaluasi adalah Pi Camera Module (antarmuka CSI) dan kamera USB (\emph{webcam}). Kedua kamera ini memiliki harga yang relatif terjangkau dan kompatibel dengan Raspberry Pi. Perbedaan antara kedua kamera tersebut dapat dilihat pada Tabel~\ref{tab:perbandingan-kamera}.
 
@@ -149,7 +158,7 @@ Harga (Tokopedia) & Rp150.000--300.000 & Rp80.000--350.000 \\
 
 Pi Camera dipilih karena memiliki latensi lebih rendah dan beban CPU yang lebih ringan dibandingkan kamera USB, sehingga tidak mengurangi kapasitas komputasi Raspberry Pi 5 yang sepenuhnya dibutuhkan untuk inferensi YOLO. Antarmuka CSI juga terhubung langsung ke \emph{ribbon cable} tanpa berbagi \emph{bandwidth} dengan perangkat USB lainnya. Oleh karena itu, \textbf{Pi Camera} dipilih sebagai sensor kamera sistem.
 
-\subsubsection*{Pemilihan Mekanisme Semprot}
+\paragraph{Pemilihan Mekanisme Semprot}
 
 Dua alternatif mekanisme semprot yang dievaluasi adalah \emph{blower sentrifugal} 5V tipe 5015 dan motor \emph{brushed} RC tipe 615/716 yang dilengkapi \emph{propeller} 40 mm. Perbandingan kedua komponen tersebut ditunjukkan pada Tabel~\ref{tab:perbandingan-blower}.
 
@@ -178,7 +187,7 @@ Harga (Tokopedia) & Rp15.000--30.000 & Rp20.000--50.000 + \emph{housing} \\
 
 Motor RC dengan \emph{propeller} ditolak karena menghasilkan aliran udara aksial yang tidak terarah ke saluran \emph{pollen}, serta berisiko menyedot serbuk sari ke dalam motor sehingga dapat menyebabkan korsleting. \emph{Blower sentrifugal} mengambil udara dari atas dan membuang udara secara terarah dari samping, sehingga cocok untuk mendorong \emph{pollen} melalui saluran keluaran. Instalasi yang lebih sederhana tanpa memerlukan \emph{housing} tambahan juga menjadi pertimbangan efisiensi waktu pengerjaan. Oleh karena itu, \textbf{Blower Sentrifugal 5V (tipe 5015)} dipilih sebagai mekanisme semprot sistem.
 
-\subsubsection*{Pemilihan Saklar Elektronik}
+\paragraph{Pemilihan Saklar Elektronik}
 
 Tiga alternatif saklar elektronik yang dievaluasi untuk mengendalikan \emph{blower} dari GPIO Raspberry Pi adalah MOSFET IRLZ44N, MOSFET IRFZ44N, dan \emph{relay} elektromekanik. Perbandingan ketiganya ditunjukkan pada Tabel~\ref{tab:perbandingan-mosfet}.
 
@@ -207,7 +216,7 @@ Berat & $<$1 gram & $<$1 gram & 5--15 gram \\
 
 IRFZ44N ditolak karena membutuhkan tegangan \emph{gate} 10--12V untuk terbuka penuh, sementara GPIO Raspberry Pi hanya menghasilkan 3.3V, sehingga MOSFET akan bekerja dalam kondisi setengah terbuka (\emph{linear region}) yang menimbulkan panas berlebih. \emph{Relay} ditolak karena tidak mendukung kontrol kecepatan via PWM, memiliki suara mekanik, dan bobotnya lebih besar. MOSFET IRLZ44N merupakan \emph{logic-level} MOSFET yang dapat diaktifkan penuh oleh tegangan 3.3V GPIO Raspberry Pi tanpa komponen tambahan, dengan resistor 220$\Omega$ pada jalur \emph{gate} sebagai pelindung GPIO. Oleh karena itu, \textbf{MOSFET IRLZ44N} dipilih sebagai saklar elektronik sistem.
 
-\subsubsection*{Pemilihan Sumber Daya}
+\paragraph{Pemilihan Sumber Daya}
 
 Dua alternatif sumber daya yang dievaluasi adalah dua buah baterai 18650 dirangkai seri dan baterai Li-Po 2S. Keduanya menghasilkan tegangan nominal 7.4V yang sesuai sebagai masukan \emph{buck converter}. Perbandingan keduanya ditunjukkan pada Tabel~\ref{tab:perbandingan-baterai}.
 
@@ -236,8 +245,10 @@ Harga (Tokopedia) & Rp30.000--80.000/sel & Rp80.000--200.000 \\
 
 Baterai 18650 dipilih karena kemudahan pengisian daya menggunakan \emph{charger} eksternal biasa tanpa memerlukan \emph{balance charger} khusus seperti pada baterai Li-Po. Kapasitas per sel yang lebih besar (2000--3500 mAh) juga memberikan durasi operasional yang lebih panjang. Dua buah sel 18650 dirangkai seri menghasilkan tegangan 7.4V yang selanjutnya diturunkan oleh \emph{buck converter} XL4015 menjadi 5.1V stabil untuk seluruh komponen sistem. Oleh karena itu, \textbf{dua buah baterai 18650 dirangkai seri} dipilih sebagai sumber daya sistem.
 
-\subsubsection*{Rangkaian Elektronik}
-Selain alur kerja, dirancang pula skema rangkaian elektronik untuk menghubungkan komponen komputasi, sensor, aktuator, dan suplai daya. Skema ini berpusat pada Raspberry Pi 5 yang dilengkapi dengan sensor \emph{Time of Flight} VL53L0X, motor servo, \emph{blower sentrifugal}, serta sirkuit penurun tegangan \emph{(buck converter)}.
+\subsubsection{Desain Penyusunan Komponen}
+\label{subsubsec:desain-penyusunan-komponen}
+
+Selain pemilihan komponen, dirancang pula skema rangkaian elektronik untuk menghubungkan komponen komputasi, sensor, aktuator, dan suplai daya. Skema ini berpusat pada Raspberry Pi 5 yang dilengkapi dengan sensor \emph{Time of Flight} VL53L0X, motor servo, \emph{blower sentrifugal}, serta sirkuit penurun tegangan \emph{(buck converter)}.
 
 \begin{figure}[H]
   \centering
@@ -246,8 +257,6 @@ Selain alur kerja, dirancang pula skema rangkaian elektronik untuk menghubungkan
   \label{fig:skema-rpi}
 \end{figure}
 
-
-\subsubsection*{Manajemen Jalur Daya}
 Penyaluran daya utama menggunakan dua buah baterai tipe 18650 yang dirangkai secara seri untuk menghasilkan tegangan 7.4V. Arus dari baterai utama dihubungkan melintasi sakelar fisik \emph{(toggle switch)} sebelum diteruskan ke masukan modul \emph{Buck Converter}. Modul ini akan menurunkan tegangan \emph{(step-down)} dengan \emph{output} 5.1V yang didistribusikan ke tiga titik jalur daya utama:
 \begin{itemize}
     \item \emph{Port} USB Type-C Raspberry Pi 5 sebagai penyuplai komputasi utama.
@@ -256,31 +265,88 @@ Penyaluran daya utama menggunakan dua buah baterai tipe 18650 yang dirangkai sec
 \end{itemize}
 Untuk menjamin kestabilan sinyal logika dan referensi tegangan antar komponen, seluruh titik kutub negatif (\emph{ground}) seperti OUT$-$ \emph{Buck Converter}, GND Raspberry Pi, \emph{Source} pada MOSFET, GND \emph{Servo}, serta GND VL53L0X dihubungkan bertumpu pada satu rute sirkuit yang sama (\emph{common ground}).
 
+Desain penyusunan fisik komponen pada tabung \emph{pollen} dan dudukan \emph{drone} dirancang menggunakan perangkat lunak Autodesk Inventor. Desain 3D mencakup tabung silinder untuk penyimpanan \emph{pollen}, mekanisme katup servo, saluran keluaran \emph{blower}, serta dudukan yang memungkinkan pemasangan sistem pada rangka \emph{drone quadcopter}.
 
-\subsection{Pengumpulan dan Anotasi Dataset}
+% TODO: tambahkan gambar desain 3D tabung + mounting drone
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{gambar/desain3d.png}
+%   \caption{Desain 3D Tabung Pollen dan Dudukan Drone}
+%   \label{fig:desain3d}
+% \end{figure}
+
+
+\section{Bahan dan Peralatan yang Digunakan}
+\label{sec:bahan-dan-peralatan}
+
+\subsection{Perangkat Keras}
+\label{subsec:perangkat-keras}
+\begin{enumerate}
+  \item Raspberry Pi 5 Model B 8GB RAM: Berperan sebagai unit komputasi utama untuk menjalankan model YOLO secara \emph{on-device}. Raspberry Pi mengolah citra secara \emph{real-time} dan mengirim sinyal ke aktuator penyemprot.
+  \item Kamera USB / Pi Camera: Digunakan untuk menangkap citra bunga kelapa sawit dari perspektif \emph{drone}. Citra yang diambil menjadi input bagi model deteksi.
+  \item \emph{Blower Fan}: Merupakan mekanisme penyemprotan serbuk yang diaktifkan oleh Raspberry Pi untuk meniup serbuk sari. Penyemprotan dilakukan secara otomatis ketika model mendeteksi bunga pada fase reseptif.
+  \item Sensor \emph{Time of Flight} VL53L0X: Digunakan sebagai sensor untuk pengecekan volume \emph{pollen} pada tabung yang menampung serbuk sari.
+  \item \emph{Servo Motor}: Digunakan untuk membuka dan menutup katup tabung \emph{pollen} untuk mengeluarkan \emph{pollen} agar bisa disemprot.
+  \item Baterai 18650 (2 sel seri): Menyediakan daya untuk Raspberry Pi dan aktuator penyemprot agar tidak membebani sistem kelistrikan \emph{drone}.
+  \item \emph{3D printed mount}: Digunakan untuk memasang Raspberry Pi, kamera, dan modul penyemprot pada \emph{drone} tanpa mengganggu \emph{propeller} dan kestabilan penerbangan.
+  \item Peralatan mekanis (obeng, ties, lem tembak): Dibutuhkan untuk pemasangan dan perakitan komponen agar stabil selama proses uji coba lapangan.
+\end{enumerate}
+
+\subsection{Perangkat Lunak}
+\label{subsec:perangkat-lunak}
+\begin{enumerate}
+  \item Raspberry Pi OS: Sistem operasi berbasis Linux yang dijalankan di Raspberry Pi untuk mendukung instalasi \emph{library} YOLO dan komputasi penyemprotan.
+  \item Python 3.10: Bahasa pemrograman utama untuk menjalankan skrip inferensi YOLO, kontrol GPIO Raspberry Pi, serta integrasi kamera dan aktuator.
+  \item Ultralytics YOLO: Model deteksi objek yang digunakan untuk mengidentifikasi bunga sawit yang siap diserbuki. Dipilih karena kecepatan inferensi yang lebih baik untuk perangkat kelas ringan.
+  \item OpenCV: Digunakan untuk menangani pengambilan citra, \emph{preprocessing}, serta visualisasi hasil deteksi.
+  \item Roboflow: Perangkat yang digunakan untuk melakukan \emph{labeling dataset}, membuat \emph{bounding box}, dan menyiapkan \emph{dataset} untuk \emph{training} YOLO.
+  \item Google Colab: Digunakan untuk melakukan proses pelatihan model YOLO.
+  \item Autodesk Inventor: Digunakan untuk membuat desain 3D untuk wadah Raspberry Pi dan alat penyerbuk.
+\end{enumerate}
+
+
+\section{Pengumpulan dan Anotasi Dataset}
+\label{sec:pengumpulan-anotasi-dataset}
+
+\subsection{Pengumpulan Data Citra}
+\label{subsec:pengumpulan-data-citra}
+
 Tahap ini bertujuan untuk memperoleh \emph{dataset} citra bunga kelapa sawit yang digunakan untuk melatih model deteksi. Pengumpulan data dilakukan di kebun kelapa sawit yang berada di Blitar, dengan mengambil citra bunga betina menggunakan kamera HP dan kamera \emph{drone}. Pengambilan data dilakukan berbagai kondisi, seperti perbedaan sudut pandang dan jarak. Selain itu, pengambilan data akan dilakukan pada siang hari agar model bisa memprediksi gambar di saat pengujian nyata. \emph{Dataset} diklasifikasikan menjadi dua kelas inti, yaitu bunga matang dan tidak matang.
+
+\subsection{Anotasi dan Persiapan Dataset}
+\label{subsec:anotasi-persiapan-dataset}
 
 Citra yang diperoleh kemudian dianotasi menggunakan perangkat \emph{labeling} seperti Roboflow dengan memberikan \emph{bounding box} pada objek bunga betina. \emph{Dataset} dibagi menjadi data latih, data validasi, dan data uji untuk memastikan proses pelatihan model berjalan optimal dan tidak mengalami \emph{overfitting}.
 
+
+\section{Pengembangan Model Deteksi}
+\label{sec:pengembangan-model-deteksi}
+
 \subsection{Pelatihan Model YOLO}
+\label{subsec:pelatihan-model-yolo}
+
 Setelah \emph{dataset} siap, tahap berikutnya adalah pelatihan model deteksi menggunakan YOLO. Proses pelatihan dilakukan di Google Colab dengan memanfaatkan GPU untuk mempercepat proses komputasi. \emph{Dataset} yang telah dianotasi digunakan sebagai input pelatihan, sementara parameter pelatihan seperti \emph{learning rate}, \emph{batch size}, dan jumlah \emph{epoch} disesuaikan agar model mencapai performa terbaik.
 
 Perbandingan dilakukan terhadap beberapa varian YOLO berdasarkan parameter ukuran model, waktu inferensi pada Raspberry Pi, serta nilai mAP@0.5 untuk menentukan model yang paling optimal antara akurasi dan kecepatan. Model dengan performa terbaik kemudian diekspor ke format yang kompatibel dengan Raspberry Pi untuk keperluan inferensi \emph{on-device}.
 
-\subsection{Evaluasi Model YOLO}
+\subsection{Evaluasi dan Pemilihan Model}
+\label{subsec:evaluasi-pemilihan-model}
+
 Pada tahap evaluasi model, dilakukan perbandingan beberapa varian arsitektur YOLO untuk menentukan model yang paling optimal digunakan pada \emph{edge device} (Raspberry Pi 5). Model yang dibandingkan meliputi YOLOv8, YOLOv9, YOLOv10, YOLOv11, dan YOLO26 dengan pertimbangan model tersebut termasuk dalam kategori \emph{lightweight object detector} yang umum digunakan untuk aplikasi \emph{real-time}.
 
-\subsection{Perancangan Sistem Penyemprot}
+
+\section{Implementasi Sistem}
+\label{sec:implementasi-sistem}
+
+\subsection{Implementasi Hardware}
+\label{subsec:implementasi-hardware}
+
 Mekanisme penyerbuk dirancang menggunakan sistem tabung penyimpanan \emph{pollen} yang dilengkapi aktuator \emph{servo motor} sebagai mekanisme buka-tutup katup (\emph{valve control}). \emph{Servo motor} dikendalikan oleh Raspberry Pi melalui sinyal PWM untuk mengatur durasi pembukaan katup sehingga volume \emph{pollen} yang dikeluarkan dapat dikontrol secara presisi.
 
 Mekanisme ini menggunakan konsep \emph{controlled release}, di mana katup hanya terbuka ketika model YOLO mendeteksi bunga pada fase reseptif dan volume \emph{pollen} terdeteksi mencukupi. Setelah durasi tertentu (misalnya 1--3 detik), katup akan tertutup kembali untuk mencegah pemborosan \emph{pollen}. Setelah itu, \emph{blower fan} akan meniupkan udara agar \emph{pollen} keluar dan menyerbuki bunga betina kelapa sawit.
 
-\subsection{Integrasi Sistem Monitoring Volume Pollen}
 Sistem \emph{monitoring} volume \emph{pollen} diintegrasikan menggunakan sensor \emph{Time of Flight} (ToF) VL53L0X yang dipasang pada bagian atas tabung \emph{pollen} untuk mengukur jarak permukaan \emph{pollen} secara non-kontak. Nilai jarak yang diperoleh dikonversi menjadi tinggi dan volume \emph{pollen} berdasarkan dimensi tabung yang telah ditentukan. Data volume ini digunakan sebagai parameter untuk memastikan ketersediaan \emph{pollen} sebelum proses penyerbukan buatan dilakukan.
 
-Hasil \emph{monitoring} volume \emph{pollen} diintegrasikan dengan sistem kendali aktuator, di mana motor \emph{servo} berfungsi sebagai katup pembuka tabung \emph{pollen} dan \emph{blower fan} sebagai media penyemprotan serbuk sari ke bunga betina sawit. Proses penyerbukan hanya dijalankan apabila volume \emph{pollen} memenuhi ambang batas minimum, sehingga integrasi ini menjamin proses penyerbukan berlangsung secara otomatis, terkontrol, dan efisien.
-
-\subsection{Implementasi Sistem pada Raspberry Pi}
 Tahap integrasi dilakukan dengan menggabungkan model deteksi berbasis YOLO, sistem \emph{monitoring} volume \emph{pollen}, serta mekanisme aktuator buka-tutup tabung \emph{pollen} ke dalam satu sistem terpadu pada Raspberry Pi 5. Kemudian sistem diintegrasikan pada \emph{drone quadcopter} kelas ringan menggunakan dudukan hasil cetak 3D yang dirancang khusus agar tidak mengganggu pusat massa dan kestabilan penerbangan.
 
 \emph{Drone} yang digunakan memiliki konfigurasi empat baling-baling (\emph{quadcopter}) dengan dimensi bentang diagonal $\pm$180--220 mm dan berat kosong di bawah 500 gram. Selain mempertimbangkan distribusi massa perangkat, pemilihan baterai juga disesuaikan dengan kapasitas \emph{payload drone}. Kapasitas \emph{payload} tambahan diperkirakan berada pada kisaran 150--250 gram agar rasio \emph{thrust-to-weight} tetap stabil untuk manuver jarak dekat di area perkebunan. Sistem penyerbuk yang dikembangkan terdiri dari beberapa komponen utama dengan estimasi berat seperti Raspberry Pi 5 sekitar 46 g, kamera sekitar 10 g, blower fan ±40 g, servo motor ±20 g, sensor VL53L0X ±3 g, serta mekanisme tabung pollen dan dudukan 3D printing sekitar 50–70 g. Dengan demikian total estimasi berat sistem berada pada kisaran 170–190 gram.
@@ -292,62 +358,28 @@ Tahap integrasi dilakukan dengan menggabungkan model deteksi berbasis YOLO, sist
   \label{fig:carakerjadrone}
 \end{figure}
 
-Untuk menyuplai daya sistem digunakan baterai Li-Po 2S (7.4 V) dengan kapasitas 1000–1500 mAh yang memiliki berat sekitar 80–110 gram. Baterai ini dipilih karena memiliki rasio energi terhadap berat yang tinggi serta ukuran fisik yang masih kompatibel dengan ruang pemasangan pada drone kelas ringan. Penempatan baterai dirancang sedekat mungkin dengan pusat massa drone agar distribusi berat tetap seimbang dan tidak mempengaruhi kestabilan penerbangan. Dengan mempertimbangkan total berat sistem dan baterai yang masih berada dalam batas payload drone, integrasi perangkat diharapkan tetap memungkinkan operasi drone yang stabil selama proses penyerbukan.
+Penempatan baterai dirancang sedekat mungkin dengan pusat massa \emph{drone} agar distribusi berat tetap seimbang dan tidak mempengaruhi kestabilan penerbangan. Dengan mempertimbangkan total berat sistem dan baterai yang masih berada dalam batas \emph{payload drone}, integrasi perangkat diharapkan tetap memungkinkan operasi \emph{drone} yang stabil selama proses penyerbukan.
 
-\subsection{Pengujian & Evaluasi Sistem}
-Evaluasi dilakukan untuk mengukur kinerja sistem secara menyeluruh. Parameter evaluasi meliputi akurasi deteksi bunga sawit oleh model YOLO, respons sensor terhadap perubahan volume pollen, keandalan mekanisme penyemprotan, serta kestabilan sistem saat dipasang pada drone. Pengujian dilakukan dalam dua tahap, yaitu pengujian statis dengan menggunakan alat yang terbatas dan pengujian langsung di kebun sawit. Hasil evaluasi digunakan untuk menilai keberhasilan sistem serta mengidentifikasi potensi pengembangan lanjutan.
 
-\section{Alat dan Bahan}
-\label{sec:alat-dan-bahan}
+\subsection{Implementasi Software}
+\label{subsec:implementasi-software}
 
-\subsection{Perangkat Keras}
-\begin{enumerate}
-  \item Raspberry Pi 5 Model B 8GB RAM: Berperan sebagai unit komputasi utama untuk menjalankan model YOLO secara \emph{on-device}. Raspberry Pi mengolah citra secara \emph{real-time} dan mengirim sinyal ke aktuator penyemprot.
-  \item Kamera USB / Pi Camera: Digunakan untuk menangkap citra bunga kelapa sawit dari perspektif \emph{drone}. Citra yang diambil menjadi input bagi model deteksi.
-  \item \emph{Blower Fan}: Merupakan mekanisme penyemprotan serbuk yang diaktifkan oleh Raspberry Pi untuk meniup serbuk sari. Penyemprotan dilakukan secara otomatis ketika model mendeteksi bunga pada fase reseptif.
-  \item Sensor \emph{Time of Flight} VL53L0X: Digunakan sebagai sensor untuk pengecekan volume \emph{pollen} pada tabung yang menampung serbuk sari.
-  \item \emph{Servo Motor}: Digunakan untuk membuka dan menutup katup tabung \emph{pollen} untuk mengeluarkan \emph{pollen} agar bisa disemprot.
-  \item Baterai Li-Po: Menyediakan daya untuk Raspberry Pi dan aktuator penyemprot agar tidak membebani sistem kelistrikan \emph{drone}.
-  \item \emph{3D printed mount}: Digunakan untuk memasang Raspberry Pi, kamera, dan modul penyemprot pada \emph{drone} tanpa mengganggu \emph{propeller} dan kestabilan penerbangan.
-  \item Peralatan mekanis (obeng, ties, lem tembak): Dibutuhkan untuk pemasangan dan perakitan komponen agar stabil selama proses uji coba lapangan.
-\end{enumerate}
+Implementasi perangkat lunak dilakukan pada Raspberry Pi 5 menggunakan bahasa pemrograman Python 3.10. Seluruh konfigurasi sistem, mulai dari nomor pin GPIO hingga parameter inferensi YOLO, disentralisasi dalam satu berkas \texttt{config.py} agar mudah dimodifikasi tanpa mengubah kode inti.
 
-\subsection{Perangkat Lunak}
-\begin{enumerate}
-  \item Raspberry Pi OS: Sistem operasi berbasis Linux yang dijalankan di Raspberry Pi untuk mendukung instalasi \emph{library} YOLO dan komputasi penyemprotan.
-  \item Python 3.10: Bahasa pemrograman utama untuk menjalankan skrip inferensi YOLO, kontrol GPIO Raspberry Pi, serta integrasi kamera dan aktuator.
-  \item Ultralytics YOLO: Model deteksi objek yang digunakan untuk mengidentifikasi bunga sawit yang siap diserbuki. Dipilih karena kecepatan inferensi yang lebih baik untuk perangkat kelas ringan.
-  \item OpenCV: Digunakan untuk menangani pengambilan citra, \emph{preprocessing}, serta visualisasi hasil deteksi.
-  \item Roboflow: Perangkat yang digunakan untuk melakukan \emph{labeling dataset}, membuat \emph{bounding box}, dan menyiapkan \emph{dataset} untuk \emph{training} YOLO.
-  \item Google Colab: Digunakan untuk melakukan proses pelatihan model YOLO.
-  \item Autodesk Inventor: Digunakan untuk membuat desain 3D untuk wadah Raspberry Pi dan alat penyerbuk.
-\end{enumerate}
+\lstinputlisting[language=Python, caption={Konfigurasi global sistem (\texttt{config.py})}, label={lst:config}]{program/config.py}
 
-\section{Tahapan Pelaksanaan Penelitian}
-\label{sec:tahapan-pelaksanaan-penelitian}
-Tahapan pelaksanaan penelitian ini disusun secara sistematis agar seluruh proses pengembangan, mulai dari perumusan masalah hingga penyusunan laporan, dapat dilakukan secara terstruktur dan terukur. Alur penelitian melibatkan pemahaman fenomena penyerbukan kelapa sawit, pengumpulan data, pembuatan model deteksi dengan YOLO, implementasi sistem pada Raspberry Pi 5, integrasi dengan \emph{drone}, dan evaluasi performa sistem dalam kondisi lapangan.
+Inferensi YOLOv11 dilakukan secara \emph{real-time} menggunakan modul deteksi generik yang mendukung berbagai versi YOLO. Model dapat dijalankan dalam format \texttt{.pt} (PyTorch) maupun format NCNN yang dioptimalkan untuk kecepatan inferensi di Raspberry Pi 5.
 
-\subsection{Perumusan Masalah}
-Tahap ini diawali dengan mengidentifikasi persoalan utama yang terjadi pada proses penyerbukan kelapa sawit di lapangan. Penyerbukan yang selama ini sangat bergantung pada kumbang \emph{Elaeidobius kamerunicus} memiliki tingkat keberhasilan yang tidak stabil, sementara penyerbukan manual oleh manusia membutuhkan tenaga kerja besar dan konsistensi yang sulit dipertahankan. Kondisi ini menimbulkan kebutuhan akan teknologi alternatif yang mampu mendukung proses penyerbukan agar lebih efisien dan terukur. Dari analisis tersebut, dirumuskan masalah inti yaitu bagaimana merancang sistem berbasis \emph{drone} yang dapat mendeteksi bunga kelapa sawit pada fase reseptif secara otomatis dan membantu proses penyerbukan agar lebih presisi. Rumusan masalah ini selanjutnya menjadi dasar bagi seluruh tahapan penelitian berikutnya.
+\lstinputlisting[language=Python, caption={Inferensi YOLO real-time (\texttt{detect\_generic.py})}, label={lst:detect}]{program/detect_generic.py}
 
-\subsection{Studi Literatur}
-Pada tahap studi literatur, dilakukan penelusuran mendalam terhadap berbagai penelitian sebelumnya yang berkaitan dengan \emph{computer vision}, deteksi objek berbasis YOLO, fenologi bunga kelapa sawit, perilaku penyerbuk alami, serta pemanfaatan \emph{drone} untuk aplikasi pertanian presisi. Literatur tersebut memberikan dasar teoritis yang kokoh untuk memahami karakteristik bunga sawit, kendala yang muncul pada proses penyerbukan, serta potensi teknologi modern dalam mengatasi permasalahan tersebut. Selain itu, kajian terhadap penelitian terdahulu membantu menentukan metode yang paling sesuai untuk digunakan, termasuk pemilihan model deteksi, pendekatan pengambilan data, serta strategi implementasi sistem pada perangkat komputasi ringan seperti Raspberry Pi 5. Hasil studi literatur ini memberi fondasi ilmiah yang kuat untuk merancang sistem yang \emph{feasible} dan efektif.
+Pembacaan sensor VL53L0X menggunakan \emph{moving average filter} untuk meredam derau pengukuran jarak. Nilai jarak selanjutnya dikonversi ke estimasi volume \emph{pollen} menggunakan rumus silinder berdasarkan dimensi tabung yang didefinisikan di \texttt{config.py}.
 
-\subsection{Penyusunan Proposal}
-Tahap ini berfokus pada penyusunan dokumen proposal penelitian yang memuat latar belakang, tujuan, batasan masalah, rancangan metodologi, kebutuhan alat dan bahan, serta jadwal pelaksanaan penelitian. Penyusunan proposal dilakukan sebagai langkah formal untuk memastikan bahwa arah penelitian jelas dan dapat dipertanggungjawabkan. Selain itu, proposal berfungsi sebagai alat komunikasi agar pembimbing dapat memberikan masukan terkait kesesuaian metode, kelayakan implementasi, dan potensi pengembangan penelitian. Setelah proposal mendapatkan persetujuan, barulah penelitian dapat dilanjutkan ke tahap teknis.
+\lstinputlisting[language=Python, caption={Konversi jarak ToF ke volume pollen (\texttt{test\_vl53l0x\_volume.py})}, label={lst:tof}]{program/test_vl53l0x_volume.py}
 
-\subsection{Pengumpulan Data}
-Proses pengumpulan data dilakukan secara langsung pada kebun kelapa sawit di Blitar dengan mengambil citra bunga betina menggunakan kamera HP dan kamera \emph{drone} dari berbagai sudut pandang (\emph{angle}), jarak, dan harus dalam kondisi pencahayaan pada siang hari. Citra yang dikumpulkan mencakup bunga yang berada pada fase reseptif (matang) maupun yang belum reseptif (tidak matang), sehingga model dapat dilatih untuk mengenali perbedaannya. Setiap citra kemudian diberi anotasi menggunakan perangkat \emph{labeling} seperti Roboflow untuk menandai \emph{bounding box} serta kelas objek. Tahap ini sangat krusial karena kualitas \emph{dataset} sangat mempengaruhi performa model YOLO yang akan dilatih. Pengumpulan data lapangan juga memastikan bahwa model yang dihasilkan mampu menangani variasi nyata di lingkungan kebun.
+Pengendalian seluruh alur kerja sistem dilakukan melalui \emph{state machine} dengan tujuh keadaan operasional: \texttt{IDLE}, \texttt{DETECTING}, \texttt{VERIFY\_POLLEN}, \texttt{SPRAYING}, \texttt{COOLDOWN}, \texttt{INSUFFICIENT}, dan \texttt{ERROR}. Transisi antar keadaan dipicu oleh hasil deteksi YOLO, pembacaan sensor ToF, dan parameter waktu dari \texttt{config.py}.
 
-\subsection{Pembuatan Model}
-Tahap pembuatan model dilakukan setelah \emph{dataset} selesai disusun. Proses dimulai dengan melakukan \emph{preprocessing dataset}, termasuk normalisasi resolusi, pemeriksaan konsistensi label, dan augmentasi untuk memperkaya variasi data. Model YOLO kemudian dilatih menggunakan \emph{dataset} tersebut pada komputer dengan GPU agar proses \emph{training} berlangsung efisien. Selama pelatihan, dilakukan pemantauan metrik seperti \emph{precision}, \emph{recall}, dan \emph{mAP} untuk memastikan model belajar dengan baik. Setelah proses \emph{training} selesai, model dievaluasi menggunakan data validasi untuk mengetahui kemampuan generalisasi terhadap kondisi yang tidak muncul pada data \emph{training}. Hasil akhir dari tahap ini adalah model YOLO yang siap digunakan untuk inferensi di perangkat Raspberry Pi 5.
+\lstinputlisting[language=Python, caption={State machine sistem penyerbukan (\texttt{state\_machine.py})}, label={lst:statemachine}]{program/state_machine.py}
 
-\subsection{Deployment}
-Pada tahap \emph{deployment}, model YOLO yang telah dilatih dipindahkan ke Raspberry Pi 5 sebagai perangkat komputasi utama. Raspberry Pi 5 dipilih karena memiliki peningkatan performa signifikan sehingga mampu menjalankan inferensi YOLO dalam waktu yang masih dapat diterima untuk aplikasi \emph{real-time}. Proses \emph{deployment} mencakup instalasi \emph{library} pendukung, penulisan skrip Python untuk menjalankan inferensi, serta koneksi antara \emph{output} deteksi dengan modul penyemprot serbuk. Sebelum diuji di \emph{drone}, sistem diujicoba terlebih dahulu pada laboratorium untuk memastikan bahwa Raspberry Pi 5 mampu mendeteksi objek secara \emph{real-time} dan menyampaikan sinyal kontrol ke aktuator penyemprot.
+Program utama sistem (\texttt{pollination\_system.py}) mengintegrasikan seluruh modul di atas dalam satu \emph{pipeline}: kamera menangkap \emph{frame}, model YOLOv11 melakukan inferensi, hasil deteksi dan pembacaan sensor ToF diumpankan ke \emph{state machine}, kemudian sinyal kontrol diteruskan ke aktuator \emph{servo} dan \emph{blower}. Setiap event penyerbukan juga dicatat dalam berkas CSV untuk keperluan analisis. Sistem dapat dijalankan dengan perintah berikut.
 
-\subsection{Evaluasi Alat}
-Evaluasi alat dilakukan melalui dua pendekatan: evaluasi komputasional dan evaluasi lapangan. Pada evaluasi komputasional, dilakukan pengukuran performa model terhadap \emph{dataset} uji dengan melihat akurasi, \emph{precision}, \emph{recall}, serta waktu inferensi di Raspberry Pi 5. Evaluasi ini bertujuan untuk memastikan bahwa model bekerja baik secara algoritmik sebelum diterapkan pada sistem fisik. Selanjutnya dilakukan evaluasi lapangan dengan memasang alat pada \emph{drone}. Sistem diuji dalam kondisi operasional nyata di kebun sawit untuk melihat kemampuan deteksi saat \emph{drone} bergerak, respons mekanisme penyemprot, serta efektivitas penyemprotan serbuk pada bunga yang telah terdeteksi reseptif. Hasil dari tahap ini menjadi dasar untuk menentukan kekuatan dan kelemahan sistem yang dikembangkan.
-
-\subsection{Penyusunan Laporan}
-Tahap terakhir adalah penyusunan laporan tugas akhir yang memuat seluruh rangkaian penelitian mulai dari latar belakang hingga hasil evaluasi. Pada tahap ini, dilakukan penulisan, penyusunan tabel dan gambar, analisis hasil, serta perumusan kesimpulan dan saran pengembangan di masa depan. Penyusunan laporan juga mencakup dokumentasi teknis seperti kode program, skema rangkaian, serta dokumentasi implementasi lapangan. Tahap ini memastikan bahwa seluruh proses penelitian terdokumentasi dengan baik dan siap dipertanggungjawabkan.
-
+\lstinputlisting[language=bash, caption={Perintah menjalankan sistem terpadu (\texttt{run\_system.sh})}, label={lst:run}]{program/run_system.sh}
